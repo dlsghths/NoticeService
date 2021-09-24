@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Notice Service</string>
+
+    // loginActivity
+    <string name="button_login">로그인</string>
+    <string name="editText_login_hint">아이디를 입력하세요.</string>
+
+    // Fragment
+
+
+</resources>

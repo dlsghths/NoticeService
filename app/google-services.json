@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "937737413607",
+    "project_id": "noticeservice-4a038",
+    "storage_bucket": "noticeservice-4a038.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937737413607:android:77c8c4dedb35abbdf89342",
+        "android_client_info": {
+          "package_name": "com.healthcare.noticeservice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937737413607-n7u6tdjpboqnqcoricta542h24otf3r2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.healthcare.noticeservice",
+            "certificate_hash": "3d40602658bb65bc438ed712d6d27c012c6152f2"
+          }
+        },
+        {
+          "client_id": "937737413607-hhqqvrurgkb21g2ru23t3jngg1bgbljd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnggFu74dFY7s9qcduned-CIbB-WazdCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937737413607-hhqqvrurgkb21g2ru23t3jngg1bgbljd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
