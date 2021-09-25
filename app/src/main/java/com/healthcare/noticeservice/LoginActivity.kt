@@ -76,8 +76,10 @@ class LoginActivity : AppCompatActivity() {
                         intent.putExtra("userInfo", user.toString())
                         intent.putExtra("arrayData", arrayData)
 
+                        sharedPref_login_update(editText_login_userId)
+
                         // 사용자 아이디 저장장
-                       startActivity(intent)
+                        startActivity(intent)
                         finish()
                     }
                     // 사용자 정보가 없을 경우
