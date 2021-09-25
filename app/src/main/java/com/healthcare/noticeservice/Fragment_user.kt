@@ -7,24 +7,21 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.transition.TransitionInflater.from
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.LayoutInflater.from
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class Fragment_Select : Fragment() {
+class Fragment_user : Fragment() {
 
     val database = Firebase.database
     var activity = Activity()
@@ -87,10 +84,10 @@ class Fragment_Select : Fragment() {
         return rootView
     }
 
-    private fun newInstant() : Fragment_Select
+    private fun newInstant() : Fragment_user
     {
         val args = Bundle()
-        val frag = Fragment_Select()
+        val frag = Fragment_user()
         frag.arguments = args
         return frag
     }
