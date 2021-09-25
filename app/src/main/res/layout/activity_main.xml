@@ -19,11 +19,15 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/hospital_all"
+            android:id="@+id/fragment_patient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/hospital_select"
+            android:id="@+id/fragment_staff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/fragment_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

@@ -21,45 +21,40 @@ import java.util.ArrayList
 
 class Fragment_patient : Fragment() {
 
-    val database = Firebase.database
-    var activity = Activity()
-    var userName : String? = null
+    var fragment_activity = Activity()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (context is Activity) {
-            activity = context
+        if(context is Activity)
+        {
+            fragment_activity = context
         }
     }
 
-    @NotNull
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        arguments?.let {
-            userName = it.getString("userName").toString()
-        }
-        val rootView = inflater.inflate(R.layout.fragment__all, container, false)
-        val listView_hospital = rootView.findViewById<ListView>(R.id.fragment_listView_all)
+        val rootView = inflater.inflate(R.layout.fragment__patient, container, false)
+        val listView_hospital = rootView.findViewById<ListView>(R.id.fragment_listView_patient)
 
+        val firebase_database = Firebase.database.getReference()
 
-        val databaseRef = database.getReference()
-        databaseRef.addValueEventListener(object : ValueEventListener {
+        firebase_database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var arraylist_data = ArrayList<String>()
 
-                for (postSnapshot in snapshot.child("대학교").children) {
+                for (postSnapshot in snapshot.child("환자용").children) {
                     arraylist_data.add(postSnapshot.key.toString() + ", " + postSnapshot.value.toString())
                 }
 
-                val adapter_first = ArrayAdapter<String>(
-                    activity,
+                val adapter = ArrayAdapter<String>(
+                    fragment_activity,
                     android.R.layout.simple_list_item_1,
                     arraylist_data
                 )
-                listView_hospital.adapter = adapter_first
+                listView_hospital.adapter = adapter
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -80,13 +75,8 @@ class Fragment_patient : Fragment() {
                     .setMessage("개인 알림 인증서에 저장하겠습니까?")
                     .setNegativeButton("취소", null)
                     .setPositiveButton("저장") {DialogInterface, i ->
-                        val action_activity = getActivity()
-                        val fragment_select = Fragment_user()
 
-                        val bundle = Bundle()
-                        bundle.putString("userName", "${userName}")
-                        fragment_select.arguments = bundle
-                        action_activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.frameLayout, fragment_select)?.commit()
+                        // TODO 데이터베이스에 사용자 선택 요소 추가
                     }
                     .show()
 
@@ -94,12 +84,5 @@ class Fragment_patient : Fragment() {
             }
         })
         return rootView
-    }
-
-    private fun newInstance(): Fragment_patient {
-        val args = Bundle()
-        val frag = Fragment_patient()
-        frag.arguments = args
-        return frag
     }
 }

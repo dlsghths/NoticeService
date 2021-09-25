@@ -23,17 +23,15 @@ import com.google.firebase.ktx.Firebase
 
 class Fragment_user : Fragment() {
 
-    val database = Firebase.database
-    var activity = Activity()
     var userName : String? = null
-    val CHANNL_ID = "Notice_Channel_01"
+    var fragment_activity = Activity()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         if(context is Activity)
         {
-            activity = context
+            fragment_activity = context
         }
     }
 
@@ -44,36 +42,33 @@ class Fragment_user : Fragment() {
         arguments?.let {
             userName = it.getString("userName").toString()
         }
-        //val userName = savedInstanceState?.getString("userName").toString()
-        val rootView = inflater.inflate(R.layout.fragment__select, container, false)
-        val listView_hospital = rootView.findViewById<ListView>(R.id.fragment_listView_select)
+        val rootView = inflater.inflate(R.layout.fragment__user, container, false)
+        val listView_hospital = rootView.findViewById<ListView>(R.id.fragment_listView_user)
 
-        val databaseRef = database.getReference()
-        databaseRef.addValueEventListener(object : ValueEventListener {
+        val firebase_database = Firebase.database.getReference()
+
+        firebase_database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var user = snapshot.child("사용자").child("${userName}").getValue()
-                var array = user.toString().split(",")
-                var arrayData = ArrayList<String>()
+                val user_data = snapshot.child("사용자").child("${userName}").getValue()
+                val user_data_array = user_data.toString().split(", ")
+                val arraylist_data = ArrayList<String>()
 
-                if(array[0] == "없음")
+                if(user_data_array[0] == "없음")
                 {
-                    arrayData.add("개인 확인용 데이터를 추가하세요.")
+                    arraylist_data.add("개인 확인용 데이터를 추가하세요.")
                 }
                 else
                 {
                     var count = 0
-                    for(postSnapshot in array)
+                    for(postSnapshot in user_data_array)
                     {
-                        arrayData.add(array[count] + ", " + snapshot.child("대학교").child(array[count]).getValue().toString())
+                        arraylist_data.add(user_data_array[count] + ", " + snapshot.child("대학교").child(user_data_array[count]).getValue().toString())
                         count++
                     }
                 }
 
-                var adapter = ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, arrayData)
+                val adapter = ArrayAdapter<String>(fragment_activity, android.R.layout.simple_list_item_1, arraylist_data)
                 listView_hospital.adapter = adapter
-
-                // createNotificationChannel()
-                alarm_calling()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -82,46 +77,5 @@ class Fragment_user : Fragment() {
         })
 
         return rootView
-    }
-
-    private fun newInstant() : Fragment_user
-    {
-        val args = Bundle()
-        val frag = Fragment_user()
-        frag.arguments = args
-        return frag
-    }
-
-    private fun createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            val name = "병원 인증서 알람 서비스"
-            val descriptionText = "인증서 기간 연장 필요"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNL_ID, name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager : NotificationManager =
-                getActivity()?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    fun alarm_calling() {
-        val group_Key = "healthcare_alarm_service"
-
-        var message_builder = NotificationCompat.Builder(activity, CHANNL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setWhen(System.currentTimeMillis() + 60000)
-            .setContentTitle("테스트 메시지")
-            .setContentText("테스트 메시지를 확인합니다")
-            .setDefaults(Notification.DEFAULT_ALL)
-            .setGroup(group_Key)
-            .setGroupSummary(true)
-            .build()
-
-        NotificationManagerCompat.from(activity).apply {
-            notify(0, message_builder)
-        }
     }
 }

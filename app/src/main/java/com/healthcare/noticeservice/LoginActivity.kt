@@ -1,6 +1,7 @@
 package com.healthcare.noticeservice
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -28,12 +29,16 @@ class LoginActivity : AppCompatActivity() {
 
         val database = Firebase.database
 
+        // 자동 로그인 기능
+        login_auto_Check()
+
         // 로그인 버튼
         button_login.setOnClickListener(View.OnClickListener {
             // 사용자 정보가 있는지 database에 확인 요청
             editText_login_userId = editText_login.text.toString()
 
             val databaseRef = database.getReference()
+
             databaseRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     var user = snapshot.child("사용자").child(editText_login_userId).getValue()
@@ -71,7 +76,8 @@ class LoginActivity : AppCompatActivity() {
                         intent.putExtra("userInfo", user.toString())
                         intent.putExtra("arrayData", arrayData)
 
-                        startActivity(intent)
+                        // 사용자 아이디 저장장
+                       startActivity(intent)
                         finish()
                     }
                     // 사용자 정보가 없을 경우
@@ -92,5 +98,31 @@ class LoginActivity : AppCompatActivity() {
                 }
             })
         })
+    }
+
+    // 자동 로그인 기능
+    fun login_auto_Check() {
+        val sharedPref = getSharedPreferences("UserName", MODE_PRIVATE)
+        val sharedPref_userName = sharedPref.getString("User_id", "")
+        if(sharedPref_userName != "")
+        {
+            // 사용자 정보를 가지고 있을 경우
+            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            intent.putExtra("userName", sharedPref_userName)
+            startActivity(intent)
+            finish()
+        }
+        else
+        {
+            return
+        }
+    }
+
+    // 접속한 사용자의 아이디 정보를 저장
+    fun sharedPref_login_update(userName : String) {
+        val sharedPref = getSharedPreferences("UserName", MODE_PRIVATE)
+        val sharedPref_editor = sharedPref.edit()
+        sharedPref_editor.putString("User_id", userName)
+        sharedPref_editor.commit()
     }
 }
