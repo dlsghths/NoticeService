@@ -25,7 +25,7 @@ class MyReceiver : BroadcastReceiver() {
         // 안드로이드 오레오 버전 이상부터는 Notification을 사용하기 위해서 채널을 등록하여야 한다.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                    Constants.CHANNEL_ID,
+                "notification channel",
                     "채널의 이름",
                     NotificationManager.IMPORTANCE_HIGH
             )
@@ -43,10 +43,11 @@ class MyReceiver : BroadcastReceiver() {
                 context,
                 Constants.Notification_ID,
                 contentIntent,
+            // Flag_cancel_current : 현재 인텐트가 이미 등록되어 있으면 삭제, 다시 등록
                 PendingIntent.FLAG_CANCEL_CURRENT
         )
 
-        val builder = NotificationCompat.Builder(context, Constants.CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, "notification channel")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle("타이틀 화면")
                 .setContentText("내용 화면")

@@ -5,10 +5,7 @@ import com.google.firebase.ktx.Firebase
 
 class Constants {
     companion object {
-        const val Notification_ID = 0
-        const val CHANNEL_ID = "notification channel"
 
-        const val alarm_time = 30
     }
     /*
     SharedPreferences 정보
