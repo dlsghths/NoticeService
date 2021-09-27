@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         login_auto_Check()
 
         // 로그인 버튼
-        button_login.setOnClickListener(View.OnClickListener {
+        button_login.setOnClickListener {
             // 사용자 정보가 있는지 database에 확인 요청
             editText_login_userId = editText_login.text.toString()
 
@@ -44,28 +44,27 @@ class LoginActivity : AppCompatActivity() {
                     var user = snapshot.child("사용자").child(editText_login_userId).getValue()
 
                     // 사용자 정보가 있을 경우
-                    if(user != null)
-                    {
+                    if (user != null) {
                         // 사용자가 원하는 정보 자르기
                         var array = user.toString().split(",")
 
                         var arrayData = ArrayList<String>()
 
+                        // TODO 수정 필요
                         // 전체 데이터에 대해서 요구할 경우
-                        if(array[0] == "전부")
-                        {
-                            for(postSnapshot in snapshot.child("대학교").children)
-                            {
+                        if (array[0] == "전부") {
+                            for (postSnapshot in snapshot.child("대학교").children) {
                                 arrayData.add(postSnapshot.key.toString() + ", " + postSnapshot.value.toString())
                             }
                         }
                         // 특정 데이터들만 요구할 경우
-                        else
-                        {
+                        else {
                             var count = 0
-                            for(postSnapshot in array)
-                            {
-                                arrayData.add(array[count] + ", " + snapshot.child("대학교").child(array[count]).getValue().toString())
+                            for (postSnapshot in array) {
+                                arrayData.add(
+                                    array[count] + ", " + snapshot.child("대학교").child(array[count])
+                                        .getValue().toString()
+                                )
                                 count++
                             }
                         }
@@ -78,13 +77,12 @@ class LoginActivity : AppCompatActivity() {
 
                         sharedPref_login_update(editText_login_userId)
 
-                        // 사용자 아이디 저장장
+                        // 사용자 아이디 저장
                         startActivity(intent)
                         finish()
                     }
                     // 사용자 정보가 없을 경우
-                    else
-                    {
+                    else {
                         // 잘못된 계정 정보에 대한 내용 팝업
                         val alert_builder = AlertDialog.Builder(this@LoginActivity)
                             .setTitle("로그인 실패")
@@ -99,7 +97,7 @@ class LoginActivity : AppCompatActivity() {
 
                 }
             })
-        })
+        }
     }
 
     // 자동 로그인 기능
@@ -109,6 +107,8 @@ class LoginActivity : AppCompatActivity() {
         if(sharedPref_userName != "")
         {
             // 사용자 정보를 가지고 있을 경우
+            Constants.user_name = sharedPref_userName.toString()
+
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
             intent.putExtra("userName", sharedPref_userName)
             startActivity(intent)

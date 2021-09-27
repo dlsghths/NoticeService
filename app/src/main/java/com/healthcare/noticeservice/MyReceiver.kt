@@ -59,4 +59,11 @@ class MyReceiver : BroadcastReceiver() {
 
         notificationManager.notify(Constants.Notification_ID, builder.build())
     }
+
+    // notification_ID를 받아오는 기능
+    /*
+    fun getNotification_ID() : Int {
+
+        return
+    }*/
 }

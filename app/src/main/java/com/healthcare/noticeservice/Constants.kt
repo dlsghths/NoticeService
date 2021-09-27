@@ -5,7 +5,15 @@ import com.google.firebase.ktx.Firebase
 
 class Constants {
     companion object {
+        val Notification_ID = 0
+        lateinit var user_name : String
 
+        fun get() : String {
+            return user_name
+        }
+        fun set(value : String) {
+            this.user_name = value
+        }
     }
     /*
     SharedPreferences 정보

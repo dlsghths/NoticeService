@@ -7,6 +7,9 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import com.google.android.material.tabs.TabLayout
 
@@ -26,7 +29,9 @@ class MainActivity : AppCompatActivity() {
 
         val tablayout = findViewById<TabLayout>(R.id.tab)
         // 화면 접속시 전체 환자용 Fragment를 띄운다
-        supportFragmentManager.beginTransaction().replace(R.id.frameLayout, fragment_activity_patient).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.frameLayout, fragment_activity_user)
+            .commit()
+        supportActionBar?.setTitle("개인용")
 
         // tablayout에서 버튼이 클릭되었을 경우 이벤트 처리
         // 선택한 Fragment를 MainActivity에 띄운다
@@ -40,29 +45,49 @@ class MainActivity : AppCompatActivity() {
                 */
                 var pos = tab.position.toInt()
 
-                if(pos == 0)
-                {
-                    supportFragmentManager.beginTransaction().replace(R.id.frameLayout, fragment_activity_patient).commit()
-                }
-                else if(pos == 1)
-                {
-                    supportFragmentManager.beginTransaction().replace(R.id.frameLayout, fragment_activity_staff).commit()
-                }
-                else
-                {
+                if (pos == 0) {
+                    supportActionBar?.setTitle("개인용")
                     // 사용자가 사용하는 이름에 대한 정보를 bundle 전달
                     val bundle = Bundle()
                     bundle.putString("userName", login_user_name)
                     fragment_activity_patient.arguments = bundle
-                    supportFragmentManager.beginTransaction().replace(R.id.frameLayout, fragment_activity_user).commit()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frameLayout, fragment_activity_user).commit()
+                } else if (pos == 1) {
+                    supportActionBar?.setTitle("환자용")
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frameLayout, fragment_activity_patient).commit()
+                } else {
+                    supportActionBar?.setTitle("의료용")
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frameLayout, fragment_activity_staff).commit()
                 }
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab?) {
 
             }
+
             override fun onTabReselected(tab: TabLayout.Tab?) {
 
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.actionbar_actions,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.actionCheckBox) {
+            if (item.title == "선택") {
+                item.title = "저장"
+            } else {
+                item.title = "선택"
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

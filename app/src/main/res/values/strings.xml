@@ -4,7 +4,15 @@
     // loginActivity
     <string name="button_login">로그인</string>
     <string name="editText_login_hint">아이디를 입력하세요.</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+    // MainActivity
+    <string name="fragmentUser">개인용</string>
+    <string name="fragmentPatient">환자용</string>
+    <string name="fragmentStaff">의료진용</string>
+
+    <string name="actionStart">선택</string>
+    <string name="actionEnd">저장</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     // Fragment
