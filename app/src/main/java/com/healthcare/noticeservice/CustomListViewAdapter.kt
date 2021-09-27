@@ -19,21 +19,22 @@ class CustomListViewAdapter : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         val pos = position
         val context = parent?.context
+        var convertView2 = convertView
 
         if (convertView == null) {
             val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val convertView = inflater.inflate(R.layout.checkableframelayout, parent, false)
+            convertView2 = inflater.inflate(R.layout.checkableframelayout, parent, false)
         }
 
-        val textTitleView = convertView?.findViewById<TextView>(R.id.list_title)
-        val textContentView = convertView?.findViewById<TextView>(R.id.list_contents)
+        val textTitleView = convertView2?.findViewById<TextView>(R.id.list_title)
+        val textContentView = convertView2?.findViewById<TextView>(R.id.list_contents)
 
         val listViewItem = listViewItemList.get(position)
 
         textTitleView?.setText(listViewItem.getTextTitle())
         textContentView?.setText(listViewItem.getTextContent())
 
-        return convertView
+        return convertView2
     }
 
     override fun getItemId(position: Int): Long {

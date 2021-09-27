@@ -56,7 +56,7 @@ class Fragment_patient : Fragment() {
 
                 val adapterTest = CustomListViewAdapter()
                 listView_hospital.adapter = adapterTest
-
+                adapterTest.addItem("aaa", "bbb")
                 /*
                 val adapter = ArrayAdapter<String>(
                     fragment_activity,
@@ -65,7 +65,7 @@ class Fragment_patient : Fragment() {
                 )
 
                  */
-                listView_hospital.adapter = adapterTest
+                //listView_hospital.adapter = adapter
             }
 
             override fun onCancelled(error: DatabaseError) {
