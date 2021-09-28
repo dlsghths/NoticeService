@@ -25,7 +25,9 @@ class MainActivity : AppCompatActivity() {
 
         // 로그인을 통해 가져온 정보 정리
         // userName = 로그인 한 사용자의 이름
-        val login_user_name = intent.getStringExtra("userName")
+        // val login_user_name = intent.getStringExtra("userName")
+        val sharedPref = getSharedPreferences("UserName", MODE_PRIVATE)
+        val loginUserName = sharedPref.getString("User_id", "")
 
         val tablayout = findViewById<TabLayout>(R.id.tab)
         // 화면 접속시 전체 환자용 Fragment를 띄운다
@@ -49,7 +51,8 @@ class MainActivity : AppCompatActivity() {
                     supportActionBar?.setTitle("개인용")
                     // 사용자가 사용하는 이름에 대한 정보를 bundle 전달
                     val bundle = Bundle()
-                    bundle.putString("userName", login_user_name)
+                    // bundle.putString("userName", login_user_name)
+                    bundle.putString("userName", loginUserName)
                     fragment_activity_patient.arguments = bundle
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.frameLayout, fragment_activity_user).commit()
@@ -74,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    /*
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.actionbar_actions,menu)
         return true
@@ -90,4 +94,6 @@ class MainActivity : AppCompatActivity() {
 
         return super.onOptionsItemSelected(item)
     }
+
+     */
 }

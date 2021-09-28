@@ -41,6 +41,8 @@ class Fragment_staff : Fragment() {
         val listView_hospital = rootView.findViewById<ListView>(R.id.fragment_listView_staff)
 
         val firebase_database = Firebase.database.getReference()
+        val sharedPref = context?.getSharedPreferences("UserName", MODE_PRIVATE)
+        val sharedPrefUserName = sharedPref?.getString("User_id", "").toString()
 
         firebase_database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -87,17 +89,17 @@ class Fragment_staff : Fragment() {
                         sharedPref_editor?.commit()
 
                         // TODO 데이터베이스에 사용자 선택 요소 추가, 중복 저장에 대한 해결 부분 추가
-                        firebase_database.child("사용자").child(Constants.user_name).get().addOnSuccessListener {
+                        firebase_database.child("사용자").child(sharedPrefUserName).get().addOnSuccessListener {
                             // 기존에 설정한 데이터 값이 없을 경우
                             if("${it.value}" == "없음")
                             {
-                                firebase_database.child("사용자").child(Constants.user_name).setValue(array[0])
+                                firebase_database.child("사용자").child(sharedPrefUserName).setValue(array[0])
                             }
                             // 기존에 설정한 데이터 값이 있을 경우
                             else
                             {
                                 val add_data = "${it.value}" + ", " + array[0]
-                                firebase_database.child("사용자").child(Constants.user_name).setValue(add_data)
+                                firebase_database.child("사용자").child(sharedPrefUserName).setValue(add_data)
                             }
                         }
                     }

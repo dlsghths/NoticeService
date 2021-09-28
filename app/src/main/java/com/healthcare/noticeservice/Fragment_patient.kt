@@ -6,13 +6,12 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -44,6 +43,8 @@ class Fragment_patient : Fragment() {
         val listView_hospital = rootView.findViewById<ListView>(R.id.fragment_listView_patient)
 
         val firebase_database = Firebase.database.getReference()
+        val sharedPref = context?.getSharedPreferences("UserName", MODE_PRIVATE)
+        val sharedPrefUserName = sharedPref?.getString("User_id", "").toString()
 
         firebase_database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -56,7 +57,7 @@ class Fragment_patient : Fragment() {
 
                 val adapterTest = CustomListViewAdapter()
                 listView_hospital.adapter = adapterTest
-                adapterTest.addItem("aaa", "bbb")
+                adapterTest.addItem("서울대학교, 2020-10-12")
                 /*
                 val adapter = ArrayAdapter<String>(
                     fragment_activity,
@@ -95,11 +96,11 @@ class Fragment_patient : Fragment() {
                         sharedPref_editor?.commit()
 
                         // TODO 데이터베이스에 사용자 선택 요소 추가, 중복 저장에 대한 해결 부분 추가
-                        firebase_database.child("사용자").child(Constants.user_name).get()
+                        firebase_database.child("사용자").child(sharedPrefUserName).get()
                             .addOnSuccessListener {
                                 // 기존에 설정한 데이터 값이 없을 경우
                                 if ("${it.value}" == "없음") {
-                                    firebase_database.child("사용자").child(Constants.user_name)
+                                    firebase_database.child("사용자").child(sharedPrefUserName)
                                         .setValue(array[0])
                                 }
                                 // 기존에 설정한 데이터 값이 있을 경우
@@ -117,7 +118,7 @@ class Fragment_patient : Fragment() {
                                     if (exist_hospital == false) {
                                         // 같은 이름의 데이터가 없을 경우 데이터 추가 실행
                                         val add_data = "${it.value}" + ", " + array[0]
-                                        firebase_database.child("사용자").child(Constants.user_name)
+                                        firebase_database.child("사용자").child(sharedPrefUserName)
                                             .setValue(add_data)
                                     } else {
                                         // 같은 이름이 데이터가 있을 경우 데이터 추가 실행 안함
@@ -131,5 +132,22 @@ class Fragment_patient : Fragment() {
             }
         })
         return rootView
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.actionbar_actions, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.actionCheckBox) {
+            if(item.title == "선택") {
+                item.title = "저장"
+            } else {
+                item.title = "선택"
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

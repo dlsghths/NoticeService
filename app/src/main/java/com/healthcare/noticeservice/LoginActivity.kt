@@ -1,16 +1,10 @@
 package com.healthcare.noticeservice
 
 import android.content.Intent
-import android.content.SharedPreferences
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,61 +17,31 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val editText_login = findViewById<EditText>(R.id.editText_login);
-        val button_login = findViewById<Button>(R.id.button_login);
-        var editText_login_userId: String
-
+        val editText_login = findViewById<EditText>(R.id.editText_login)
+        val button_login = findViewById<Button>(R.id.button_login)
         val database = Firebase.database
 
         // 자동 로그인 기능
-        login_auto_Check()
+        loginAutoCheck()
 
         // 로그인 버튼
         button_login.setOnClickListener {
-            // 사용자 정보가 있는지 database에 확인 요청
-            editText_login_userId = editText_login.text.toString()
+            // 사용자 정보가 있는지 db에 확인 요청
+            val editText_login_userId = editText_login.text.toString()
 
             val databaseRef = database.getReference()
 
             databaseRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var user = snapshot.child("사용자").child(editText_login_userId).getValue()
+                    val user = snapshot.child("사용자").child(editText_login_userId).getValue()
 
                     // 사용자 정보가 있을 경우
                     if (user != null) {
-                        // 사용자가 원하는 정보 자르기
-                        var array = user.toString().split(",")
-
-                        var arrayData = ArrayList<String>()
-
-                        // TODO 수정 필요
-                        // 전체 데이터에 대해서 요구할 경우
-                        if (array[0] == "전부") {
-                            for (postSnapshot in snapshot.child("대학교").children) {
-                                arrayData.add(postSnapshot.key.toString() + ", " + postSnapshot.value.toString())
-                            }
-                        }
-                        // 특정 데이터들만 요구할 경우
-                        else {
-                            var count = 0
-                            for (postSnapshot in array) {
-                                arrayData.add(
-                                    array[count] + ", " + snapshot.child("대학교").child(array[count])
-                                        .getValue().toString()
-                                )
-                                count++
-                            }
-                        }
+                        // 사용자 아이디 저장
+                        sharedLoginUpdate(editText_login_userId)
 
                         // MainActivity 호출
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        intent.putExtra("userName", editText_login_userId)
-                        intent.putExtra("userInfo", user.toString())
-                        intent.putExtra("arrayData", arrayData)
-
-                        sharedPref_login_update(editText_login_userId)
-
-                        // 사용자 아이디 저장
                         startActivity(intent)
                         finish()
                     }
@@ -101,16 +65,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     // 자동 로그인 기능
-    fun login_auto_Check() {
+    private fun loginAutoCheck() {
         val sharedPref = getSharedPreferences("UserName", MODE_PRIVATE)
         val sharedPref_userName = sharedPref.getString("User_id", "")
         if(sharedPref_userName != "")
         {
-            // 사용자 정보를 가지고 있을 경우
-            Constants.user_name = sharedPref_userName.toString()
-
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
-            intent.putExtra("userName", sharedPref_userName)
             startActivity(intent)
             finish()
         }
@@ -121,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     // 접속한 사용자의 아이디 정보를 저장
-    fun sharedPref_login_update(userName : String) {
+    fun sharedLoginUpdate(userName : String) {
         val sharedPref = getSharedPreferences("UserName", MODE_PRIVATE)
         val sharedPref_editor = sharedPref.edit()
         sharedPref_editor.putString("User_id", userName)
