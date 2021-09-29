@@ -13,16 +13,14 @@ import androidx.core.view.isVisible
 
 class CustomListViewAdapter : BaseAdapter() {
     private val listViewItemList = ArrayList<ListViewItem>()
-    lateinit var convertView : View
+
     override fun getCount(): Int {
         return listViewItemList.size
     }
 
     override fun getView(position: Int, view: View?, parent: ViewGroup?): View? {
         val context = parent?.context
-        if (view != null) {
-            convertView = view
-        }
+        var convertView = view
 
         if (convertView == null) {
             val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -35,11 +33,6 @@ class CustomListViewAdapter : BaseAdapter() {
         textTitleView?.setText(listViewItem.getText())
 
         return convertView
-    }
-
-    fun getViewInvisible() {
-        val checkBox = convertView?.findViewById<CheckBox>(R.id.list_checkBox)
-        checkBox.isVisible = false
     }
 
     override fun getItemId(position: Int): Long {

@@ -1,5 +1,8 @@
 package com.healthcare.noticeservice
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +10,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
     // 관리가 필요한 Fragment 화면 선언
@@ -17,22 +22,55 @@ class MainActivity : AppCompatActivity() {
     // false = item.text "선택"
     // true = item.text "저장"
     var optionCheck: Boolean = false
-    lateinit var menuTake : Menu
+    lateinit var menuTake: Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 로그인을 통해 가져온 정보 정리
-        // userName = 로그인 한 사용자의 이름
-        val sharedPref = getSharedPreferences("UserName", MODE_PRIVATE)
-        val loginUserName = sharedPref.getString("User_id", "")
+        val firebaseDatabase = Firebase.database.getReference()
+
+        // 저장되어 있는 사용자 정보 확인
+        val prefUserName = getSharedPreferences("UserName", MODE_PRIVATE)
+        val loginUserName = prefUserName.getString("User_id", "").toString()
+        // 저장되어 있는 병원 정보 확인
+        val prefHospital = getSharedPreferences("hospital", MODE_PRIVATE)
+        if (prefHospital.all.isEmpty()) {
+            // 사용자가 가지고 있는 정보가 없을 경우
+            // firebase에 사용자 정보가 있는지 확인
+            firebaseDatabase.child("사용자").child(loginUserName).get().addOnSuccessListener {
+                if ("${it.value}" == "없음") {
+                    // 기존에 설정한 데이터 값이 없을 경우
+                } else {
+                    // 기존에 설정한 데이터 값이 있을 경우
+                    val
+                    val array_hospital = "${it.value}".split(", ")
+                    var exist_hospital = false
+                    var count = 0
+                    for (i in array_hospital) {
+                        if (array[0] == array_hospital[count]) {
+                            exist_hospital = true
+                        }
+                        count++
+                    }
+                }
+            }
+        } else {
+            // 사용자가 가지고 있는 정보가 있을 경우
+        }
+
 
         val tablayout = findViewById<TabLayout>(R.id.tab)
         // 화면 접속시 전체 환자용 Fragment를 띄운다
         supportFragmentManager.beginTransaction().replace(R.id.frameLayout, activityUser)
             .commit()
         supportActionBar?.setTitle("개인용")
+
+        // 메인화면이 시작되었을 때 가지고 있는 알림 설정 값을 확인한다.
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, MyReceiver::class.java)
+        //val pendingIntent = PendingIntent.getBroadcast(this, )
+
 
         // tablayout에서 버튼이 클릭되었을 경우 이벤트 처리
         // 선택한 Fragment를 MainActivity에 띄운다

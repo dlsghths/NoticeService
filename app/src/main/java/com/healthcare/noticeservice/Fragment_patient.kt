@@ -45,14 +45,13 @@ class Fragment_patient : Fragment() {
         val sharedPref = context?.getSharedPreferences("UserName", MODE_PRIVATE)
         val sharedPrefUserName = sharedPref?.getString("User_id", "").toString()
 
-        // 커스텀리스트뷰
-        val customAdapter = CustomListViewAdapter()
-
         firebase_database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 // arraylist 초기화
                 arraylist_data.clear()
 
+                // 커스텀리스트뷰
+                val customAdapter = CustomListViewAdapter()
                 listView_hospital.adapter = customAdapter
 
                 for (postSnapshot in snapshot.child("환자용").children) {
@@ -66,12 +65,6 @@ class Fragment_patient : Fragment() {
             }
         })
 
-        // listView의 item을 선택했을 때의 이벤트 처리
-        listView_hospital.setOnItemClickListener { p0, p1, position, p3 ->
-
-        }
-
-/*
         listView_hospital.setOnItemLongClickListener { p0, p1, position, p3 ->
             val alert_builder = AlertDialog.Builder(activity)
                 .setTitle("알림 저장")
@@ -83,7 +76,7 @@ class Fragment_patient : Fragment() {
                     val sharedPref = activity?.getSharedPreferences("hospital", MODE_PRIVATE)
                     val sharedPref_editor = sharedPref?.edit()
 
-                    val array = arraylist_data.get(position).toString().split(", ")
+                    val array = arraylist_data.get(position).split(", ")
                     sharedPref_editor?.putString(array[0], array[1])
                     sharedPref_editor?.commit()
 
@@ -122,26 +115,22 @@ class Fragment_patient : Fragment() {
 
             true
         }
-*/
-
 
         return rootView
     }
 
-    fun test () {
-        CustomListViewAdapter().getViewInvisible()
-        customAdapter.notifyDataSetChanged()
-    }
-
     // MainActivity에서 item 선택시 호출
     fun optionsItemSelected(item: MenuItem) {
-        when {
+        if (item.title == "선택") {
             // item이 "선택"일 경우
             // checkBox를 보이게
+            //CustomListViewAdapter().getViewInvisible()
+            // 리스트에서 데이터 가져오기
 
+
+        } else {
             // item이 "저장"일 경우
             // checkBox를 안보이게
-            test()
         }
     }
 }
