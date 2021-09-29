@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -57,22 +58,22 @@ class Fragment_user : Fragment() {
                     arraylist_data.add("개인 확인용 데이터를 추가하세요.")
                 } else {
                     var count = 0
+                    val customAdapter = CustomListViewAdapter()
+                    listView_hospital.adapter = customAdapter
                     for (postSnapshot in user_data_array) {
-                        // TODO 사용자가 선택한 요소 의료용, 환자용에 따라서 분류
                         arraylist_data.add(
                             user_data_array[count] + ", " + snapshot.child("환자용")
                                 .child(user_data_array[count]).getValue().toString()
                         )
+                        customAdapter.addItem(
+                            user_data_array[count] + ", " + snapshot.child("환자용")
+                                .child(user_data_array[count]).getValue().toString()
+                        )
                         count++
+
+                        // TODO 사용자가 선택한 요소 의료용, 환자용에 따라서 분류
                     }
                 }
-
-                val adapter = ArrayAdapter<String>(
-                    fragment_activity,
-                    android.R.layout.simple_list_item_1,
-                    arraylist_data
-                )
-                listView_hospital.adapter = adapter
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -137,5 +138,14 @@ class Fragment_user : Fragment() {
             }
         })
         return rootView
+    }
+
+    // MainActivity에서 item 선택시 호출
+    fun optionsItemSelected(item: MenuItem) {
+        when {
+            // item이 "선택"일 경우
+
+            // item이 "저장"일 경우
+        }
     }
 }
