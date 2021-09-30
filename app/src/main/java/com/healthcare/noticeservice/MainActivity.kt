@@ -54,27 +54,25 @@ class MainActivity : AppCompatActivity() {
                     // finish
                 } else {
                     // 사용자가 특정한 데이터 정보가 있을 경우
-                    // sharedPreferences에 해당 리스트를 저장
-
                     // 해당 사용자가 선택한 병원 리스트를 split으로 나누어 저장
                     val userInfoSplit = userInfo.split(", ")
                     // 나눈 병원 리스트 넘버를 확인해서 병원 리스트에 맞는 데이터 값 받아오기
                     var count: Int = 0
                     val sharedPref = getSharedPreferences("hospital", MODE_PRIVATE)
                     val sharedPrefEditor = sharedPref.edit()
+                    // sharedPreferences에 해당 리스트를 저장
                     for (info in userInfoSplit) {
-                        val hospitalSplit =
-                            it.child("병원").child(userInfoSplit[count]).value.toString().split(", ")
-                        sharedPrefEditor.put
-                        sharedPrefEditor.putString(hospitalSplit[0], hospitalSplit[1])
+                        sharedPrefEditor.putString(userInfoSplit[count], it.child("병원").child(userInfoSplit[count]).value.toString())
                         sharedPrefEditor.commit()
                         count++
                     }
+                    // sharedPreferences를 확인해서 알림 목록을 등록
                     sharedHospital()
                 }
             }
         } else {
             // 사용자가 가지고 있는 정보가 있을 경우
+            Log.d("tag", "정보 있음")
         }
 
         val tablayout = findViewById<TabLayout>(R.id.tab)
@@ -145,7 +143,6 @@ class MainActivity : AppCompatActivity() {
                 // 저장으로 item 텍스트를 변경
                 item.title = "저장"
                 optionCheck = true
-                makeAlarm(0, "2021-09-30")
             } else {
                 // 선택으로 item 텍스트를 변경
                 item.title = "선택"
@@ -169,10 +166,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     // sharedPreferences에 저장되어 있는 날짜 데이터로 알림 생성
-    fun makeAlarm(Notification_ID: Int, Notification_Date: String) {
+    fun makeAlarm(Notification_ID: Int, Notification_Date: String, Notification_Name: String) {
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(this, MyReceiver::class.java)
+        intent.putExtra("Notification_ID", Notification_ID)
+        intent.putExtra("Hospital_Name", Notification_Name)
+
         val pendingIntent = PendingIntent.getBroadcast(
             this,
             Notification_ID,
@@ -190,11 +190,19 @@ class MainActivity : AppCompatActivity() {
     fun sharedHospital() {
         // 메인화면이 시작되었을 때 가지고 있는 알림 설정 값을 확인한다.
         val sharedPref = getSharedPreferences("hospital", MODE_PRIVATE)
+
+        val keys = sharedPref.all
+        for (entry in keys) {
+            val split = entry.value.toString().split(", ")
+            makeAlarm(entry.key.toInt(), split[1], split[0])
+        }
+        /*
         var count = 0
         for (info in 0..sharedPref.all.size) {
-            sharedPref.getString()
+            val sharedPref_userName = sharedPref.all.entries
+            val split = sharedPref_userName.split(", ")
+
             count++
-        }
-        makeAlarm(0, "2021-09-01")
+        }*/
     }
 }
