@@ -5,13 +5,22 @@ import android.app.PendingIntent
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
+import kotlin.time.milliseconds
 
 class MainActivity : AppCompatActivity() {
     // 관리가 필요한 Fragment 화면 선언
@@ -30,35 +39,43 @@ class MainActivity : AppCompatActivity() {
 
         val firebaseDatabase = Firebase.database.getReference()
 
-        // 저장되어 있는 사용자 정보 확인
+        // 저장되어 있는 sharedPreferences 사용자 정보 확인
         val prefUserName = getSharedPreferences("UserName", MODE_PRIVATE)
         val loginUserName = prefUserName.getString("User_id", "").toString()
-        // 저장되어 있는 병원 정보 확인
+        // 저장되어 있는 sharedPreferences 병원 정보 확인
         val prefHospital = getSharedPreferences("hospital", MODE_PRIVATE)
         if (prefHospital.all.isEmpty()) {
-            // 사용자가 가지고 있는 정보가 없을 경우
-            // firebase에 사용자 정보가 있는지 확인
-            firebaseDatabase.child("사용자").child(loginUserName).get().addOnSuccessListener {
-                if ("${it.value}" == "없음") {
-                    // 기존에 설정한 데이터 값이 없을 경우
+            // 사용자가 내부에 가지고 있는 정보가 없을 경우
+            // firebase에는 사용자가 선택한 병원 리스트가 있는지 확인
+            firebaseDatabase.get().addOnSuccessListener {
+                val userInfo = it.child("사용자").child(loginUserName).value.toString()
+                if (userInfo == "없음") {
+                    // 사용자가 특정한 데이터 정보가 없을 경우
+                    // finish
                 } else {
-                    // 기존에 설정한 데이터 값이 있을 경우
-                    val
-                    val array_hospital = "${it.value}".split(", ")
-                    var exist_hospital = false
-                    var count = 0
-                    for (i in array_hospital) {
-                        if (array[0] == array_hospital[count]) {
-                            exist_hospital = true
-                        }
+                    // 사용자가 특정한 데이터 정보가 있을 경우
+                    // sharedPreferences에 해당 리스트를 저장
+
+                    // 해당 사용자가 선택한 병원 리스트를 split으로 나누어 저장
+                    val userInfoSplit = userInfo.split(", ")
+                    // 나눈 병원 리스트 넘버를 확인해서 병원 리스트에 맞는 데이터 값 받아오기
+                    var count: Int = 0
+                    val sharedPref = getSharedPreferences("hospital", MODE_PRIVATE)
+                    val sharedPrefEditor = sharedPref.edit()
+                    for (info in userInfoSplit) {
+                        val hospitalSplit =
+                            it.child("병원").child(userInfoSplit[count]).value.toString().split(", ")
+                        sharedPrefEditor.put
+                        sharedPrefEditor.putString(hospitalSplit[0], hospitalSplit[1])
+                        sharedPrefEditor.commit()
                         count++
                     }
+                    sharedHospital()
                 }
             }
         } else {
             // 사용자가 가지고 있는 정보가 있을 경우
         }
-
 
         val tablayout = findViewById<TabLayout>(R.id.tab)
         // 화면 접속시 전체 환자용 Fragment를 띄운다
@@ -66,55 +83,52 @@ class MainActivity : AppCompatActivity() {
             .commit()
         supportActionBar?.setTitle("개인용")
 
-        // 메인화면이 시작되었을 때 가지고 있는 알림 설정 값을 확인한다.
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, MyReceiver::class.java)
-        //val pendingIntent = PendingIntent.getBroadcast(this, )
-
+        sharedHospital()
 
         // tablayout에서 버튼이 클릭되었을 경우 이벤트 처리
         // 선택한 Fragment를 MainActivity에 띄운다
-        tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            // tab의 상태가 선택되지 않음에서 선택 상태로 변경
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                // 저장을 완료해서 item의 텍스트가 "선택"일 경우
-                /*
-                0 = 전체 환자용
-                1 = 전체 의료용
-                2 = 개인 사용자 선택
-                */
-                menuTake.findItem(R.id.actionCheckBox).title = "선택"
-                when (tab.position) {
-                    0 -> {
-                        supportActionBar?.setTitle("개인용")
-                        // 사용자가 사용하는 이름에 대한 정보를 bundle 전달
-                        val bundle = Bundle()
-                        bundle.putString("userName", loginUserName)
-                        activityPatient.arguments = bundle
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.frameLayout, activityUser).commit()
-                    }
-                    1 -> {
-                        supportActionBar?.setTitle("환자용")
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.frameLayout, activityPatient).commit()
-                    }
-                    2 -> {
-                        supportActionBar?.setTitle("의료진용")
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.frameLayout, activityStaff).commit()
+        tablayout.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener {
+                // tab의 상태가 선택되지 않음에서 선택 상태로 변경
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    // 저장을 완료해서 item의 텍스트가 "선택"일 경우
+                    /*
+                    0 = 전체 환자용
+                    1 = 전체 의료용
+                    2 = 개인 사용자 선택
+                    */
+                    menuTake.findItem(R.id.actionCheckBox).title = "선택"
+                    when (tab.position) {
+                        0 -> {
+                            supportActionBar?.setTitle("개인용")
+                            // 사용자가 사용하는 이름에 대한 정보를 bundle 전달
+                            val bundle = Bundle()
+                            bundle.putString("userName", loginUserName)
+                            activityPatient.arguments = bundle
+                            supportFragmentManager.beginTransaction()
+                                .replace(R.id.frameLayout, activityUser).commit()
+                        }
+                        1 -> {
+                            supportActionBar?.setTitle("환자용")
+                            supportFragmentManager.beginTransaction()
+                                .replace(R.id.frameLayout, activityPatient).commit()
+                        }
+                        2 -> {
+                            supportActionBar?.setTitle("의료진용")
+                            supportFragmentManager.beginTransaction()
+                                .replace(R.id.frameLayout, activityStaff).commit()
+                        }
                     }
                 }
-            }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
 
-            }
+                }
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {
+                override fun onTabReselected(tab: TabLayout.Tab?) {
 
-            }
-        })
+                }
+            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -131,6 +145,7 @@ class MainActivity : AppCompatActivity() {
                 // 저장으로 item 텍스트를 변경
                 item.title = "저장"
                 optionCheck = true
+                makeAlarm(0, "2021-09-30")
             } else {
                 // 선택으로 item 텍스트를 변경
                 item.title = "선택"
@@ -151,5 +166,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    // sharedPreferences에 저장되어 있는 날짜 데이터로 알림 생성
+    fun makeAlarm(Notification_ID: Int, Notification_Date: String) {
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
+        val intent = Intent(this, MyReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            Notification_ID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val time = SimpleDateFormat("yyyy-MM-dd")
+        val stringTime = Notification_Date
+        val date = time.parse(stringTime).time
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP, date + 54000000 + 2940000, pendingIntent)
+    }
+
+    fun sharedHospital() {
+        // 메인화면이 시작되었을 때 가지고 있는 알림 설정 값을 확인한다.
+        val sharedPref = getSharedPreferences("hospital", MODE_PRIVATE)
+        var count = 0
+        for (info in 0..sharedPref.all.size) {
+            sharedPref.getString()
+            count++
+        }
+        makeAlarm(0, "2021-09-01")
     }
 }

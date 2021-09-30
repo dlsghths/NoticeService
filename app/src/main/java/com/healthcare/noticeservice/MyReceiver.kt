@@ -49,11 +49,11 @@ class MyReceiver : BroadcastReceiver() {
 
         val builder = NotificationCompat.Builder(context, "notification channel")
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("타이틀 화면")
+                .setContentTitle("인증서 기간 만료 안내")
                 .setContentText("내용 화면")
                 .setContentIntent(contentPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setWhen(System.currentTimeMillis())
+                //.setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
 
